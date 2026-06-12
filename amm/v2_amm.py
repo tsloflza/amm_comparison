@@ -65,10 +65,11 @@ class UniswapV2AMM(BaseAMM):
         """ℓ/V = σ²/8  (closed-form constant)"""
         return sigma**2 / 8.0
 
-    def impermanent_loss(self, P: float) -> float:
-        """IL(r) = 1 - 2√r/(1+r) >= 0,  r = P/P0  (HODL outperforms LP)"""
-        r = P / self.P0
-        return max(1.0 - 2.0 * sqrt(r) / (1.0 + r), 0.0)
+    # impermanent_loss is intentionally not overridden here.
+    # The base-class implementation computes (HODL − AMM) / V0, which for V2 gives
+    #   IL(r) = (r+1)/2 − √r  where r = P/P0.
+    # The closed-form 1 − 2√r/(1+r) equals IL/HODL_VALUE (not IL/V0) and would
+    # be inconsistent with every other AMM's normalisation.  [Bug fix]
 
     # ------------------------------------------------------------------
     # Slippage: x*y = k  →  y_out = k/(x+Δx) - y

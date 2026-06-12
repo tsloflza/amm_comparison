@@ -90,12 +90,20 @@ def generate_trade_schedule(
 def accumulate_fees(
     amm,
     schedule: dict,
+    prices: np.ndarray = None,
 ) -> np.ndarray:
     """
     Given a trade schedule and an AMM, compute cumulative fee revenue over time.
 
     Fee per trade:
         fee = |delta_x| * P_t * fee_tier   (fee on input, in USD)
+
+    Parameters
+    ----------
+    prices : optional 1-D array of length >= n_steps.  When supplied, fees are
+             valued at the actual price at each step rather than the fixed P0.
+             Pass prices.ravel()[:n_steps] for a single path extracted from a
+             (n_steps+1, n_paths) matrix.
 
     Returns
     -------
@@ -105,16 +113,16 @@ def accumulate_fees(
     trade_sizes  = schedule["trade_sizes"]   # in X
     n_steps = len(arrival_mask)
 
-    fees_per_step = np.zeros(n_steps)
+    # Use actual step prices when provided; fall back to P0 (initial price)
+    if prices is not None:
+        prices_1d = np.asarray(prices).ravel()[:n_steps]
+    else:
+        prices_1d = np.full(n_steps, amm.P0)
 
-    # For fee accumulation we only need trade size * P * fee_tier
-    # We approximate P at each step from the simulated price path
-    # (passed indirectly; caller should pass prices separately if needed)
+    fees_per_step = np.zeros(n_steps)
     for t in range(n_steps):
         if arrival_mask[t] and trade_sizes[t] > 0:
-            # Approximate fee in USD: fee_tier * |dx| * fee_tier already
-            # built into get_amount_out; here we just tally it separately
-            fee_usd = trade_sizes[t] * amm.P0 * amm.fee_tier
+            fee_usd = trade_sizes[t] * prices_1d[t] * amm.fee_tier
             fees_per_step[t] = fee_usd
 
     return np.cumsum(fees_per_step)

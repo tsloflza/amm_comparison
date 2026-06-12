@@ -142,6 +142,12 @@ def plot_slippage_all(amms: list, save: bool = True):
     """
     Single panel: one representative per AMM family.
     Clear for presentations.
+
+    Note: Curve(A=100) correctly shows dramatically lower slippage than other
+    AMMs.  This is by design: with amplification A=100 the StableSwap invariant
+    behaves almost like a constant-sum market maker near the peg, concentrating
+    all liquidity in a very narrow price band.  The tradeoff is extremely high
+    LVR per dollar of TVL when prices deviate from the peg.
     """
     trade_fracs = np.logspace(-4, -0.7, 80)
 
@@ -158,6 +164,11 @@ def plot_slippage_all(amms: list, save: bool = True):
     ax.set_title("Fig 2b – Slippage Comparison (representative AMMs)", fontsize=11, fontweight="bold")
     ax.legend(fontsize=9, framealpha=0.9)
     ax.grid(True, which="both", alpha=0.25)
+    # Explanatory footnote
+    fig.text(0.01, -0.03,
+             "Note: Curve(A=100) slippage is low by design — StableSwap concentrates "
+             "liquidity near the peg (tradeoff: very high LVR/TVL when price deviates).",
+             fontsize=7, color="grey", wrap=True)
     plt.tight_layout()
 
     path = os.path.join(RESULTS_DIR, "fig2b_slippage_all.png")

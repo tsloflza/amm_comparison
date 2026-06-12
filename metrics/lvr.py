@@ -115,7 +115,8 @@ def empirical_lvr(
     lvr_emp : (n_paths,) normalised by V0
     """
     n_steps, n_paths = prices.shape[0] - 1, prices.shape[1]
-    steps_per_rebal  = max(1, rebal_freq_min // dt_minutes)
+    # round() avoids collision when rebal_freq_min < dt_minutes (e.g. fast mode)
+    steps_per_rebal  = max(1, round(rebal_freq_min / dt_minutes))
 
     pool_pnl = np.array([
         amm.pool_value(prices[-1, j]) - amm.pool_value(prices[0, j])

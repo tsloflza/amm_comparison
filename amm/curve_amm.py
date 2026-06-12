@@ -64,13 +64,22 @@ def _compute_y_from_x(x_new: float, D: float, A: float) -> float:
     """
     Given new x balance and invariant D, solve for the corresponding y.
     Newton-Raphson on the StableSwap invariant.
+
+    Derivation (n=2):
+        4A(x+y) + D = 4AD + D³/(4xy)
+    Multiply through by y and collect:
+        4A·y² + (4Ax + D - 4AD)·y − D³/(4x) = 0
+    Divide by 4A = Ann:
+        y² + (x + D/Ann − D)·y − D³/(4x·Ann) = 0
+    So  b = x + D/Ann − D
+        c = D³ / (4·x·Ann)   ← Ann factor is required in the denominator
     """
     Ann = A * _N_N
     # Coefficients for: y² + b·y - c = 0
     b = x_new + D / Ann - D
-    c = D**3 / (_N_N * x_new)
+    c = D**3 / (_N_N * x_new * Ann)   # FIX: was D**3 / (_N_N * x_new), missing Ann
 
-    # Newton: f(y) = y² + b·y - c
+    # Newton: y_next = (y² + c) / (2y + b)
     y = D  # initial guess
     for _ in range(256):
         y_prev = y

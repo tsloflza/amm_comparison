@@ -6,10 +6,10 @@ Uniswap V3 concentrated-liquidity AMM (single-range position).
 Invariant (range order over [Pa, Pb)):
     f(x,y) = (x + L/√Pb)^(1/2) · (y + L·√Pa)^(1/2)
 
-Pool value function (Milionis et al., Example 4):
-    V(P) = L·(2√P - P/√Pb - √Pa)   for P ∈ [Pa, Pb)
-    V(P) = L·(1/√Pa - 1/√Pb)·P     for P < Pa   (all in Y)
-    V(P) = L·(√Pb - √Pa)            for P >= Pb  (all in X… wait: all in Y)
+Pool value function (Milionis et al., Example 4, eq. 19):
+    V(P) = L·(2√P - P/√Pb - √Pa)   for P ∈ [Pa, Pb)   (in-range, mixed X & Y)
+    V(P) = L·(1/√Pa - 1/√Pb)·P     for P < Pa          (out-of-range: all in X)
+    V(P) = L·(√Pb - √Pa)            for P >= Pb         (out-of-range: all in Y)
 
 Demand curves (in-range):
     x*(P) = L·(1/√P - 1/√Pb)
@@ -81,7 +81,8 @@ class UniswapV3AMM(BaseAMM):
         sa = sqrt(self.Pa)
         sb = sqrt(self.Pb)
         if P < self.Pa:
-            # fully in Y — no, fully in X
+            # Out-of-range below Pa: all holdings are in the risky asset X
+            # V(P) = L·(1/√Pa − 1/√Pb)·P   [Milionis et al., eq. 19]
             return self.L * (1.0 / sa - 1.0 / sb) * P
         elif P >= self.Pb:
             # fully in Y

@@ -95,7 +95,10 @@ def run_simulation(
     for freq in rebal_freqs_min:
         rb_pnl = _rebalancing_pnl(amm, prices, dt_minutes, freq, n_paths, n_steps)
         rebal_pnl[freq]  = rb_pnl / amm.V0
-        hedged_pnl[freq] = pool_pnl - rebal_pnl[freq]
+        # Delta-hedged LP P&L = (pool_pnl + fees) - rebal_pnl = fees - LVR
+        # [Milionis et al., eq. 14]:  hedged = LP P&L - R_T = FEE - LVR
+        # pool_pnl here is V(P_T)-V(P_0) only; adding fee_revenue gives full LP P&L
+        hedged_pnl[freq] = pool_pnl + fee_revenue - rebal_pnl[freq]
 
     return {
         "prices":          prices,
@@ -133,7 +136,10 @@ def _rebalancing_pnl(
     -------
     rb_pnl : np.ndarray (n_paths,)  in USD
     """
-    steps_per_rebal = max(1, freq_minutes // dt_minutes)
+    # Use rounding so that a rebalancing frequency shorter than one simulation
+    # step (e.g. freq=1 min with dt=5 min) maps to steps_per_rebal=1 rather
+    # than colliding with freq=5 min via floor division.
+    steps_per_rebal = max(1, round(freq_minutes / dt_minutes))
     rb_pnl = np.zeros(n_paths)
 
     for j in range(n_paths):
