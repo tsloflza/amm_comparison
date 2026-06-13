@@ -31,7 +31,7 @@ This project directly operationalizes the LVR framework by comparing three major
 | AMM | Invariant / Mechanism | Key Parameter(s) |
 |-----|----------------------|-----------------|
 | **Uniswap V2** | $x \cdot y = k$ (CPMM) | Fee tier $f = 0.3\%$ |
-| **Uniswap V3** | Concentrated CPMM over range $[P_a, P_b)$ | Range width $r = P_b / P_a$; fee tier $f \in \{ 0.05\%, 0.3\%, 1\% \}$ |
+| **Uniswap V3** | Concentrated CPMM over range $[P_a, P_b)$ | Range width $r = P_b / P_a$; fee tier $f \in \lbrace 0.05\%, 0.3\%, 1\% \rbrace$ |
 | **Curve StableSwap** | Hybrid: $A \cdot n^n \sum x_i + D = A \cdot n^n \cdot D + D^{n+1} / (n^n \prod x_i)$ | Amplification coefficient $A$ |
 | **Balancer Weighted** | $\prod x_i^{w_i} = k$ (Geometric mean) | Weight vector $\mathbf{w}$; fee tier |
 
@@ -86,7 +86,7 @@ From Milionis et al. Example 2, the weighted geometric mean invariant $f(x,y) = 
 
 $$V(P) = L \cdot \frac{\theta^\theta (1-\theta)^{1-\theta}}{1} \cdot P^\theta, \quad \frac{\ell(\sigma, P)}{V(P)} = \frac{\sigma^2}{2}\theta(1-\theta)$$
 
-This is the only CFMM family where **LVR as a fraction of pool value is constant** across all price levels. We will study weights $\theta \in \{0.2, 0.5, 0.8\}$ (corresponding to 20/80, 50/50, and 80/20 pools). The 50/50 pool matches V2; asymmetric pools reduce LVR by concentrating exposure.
+This is the only CFMM family where **LVR as a fraction of pool value is constant** across all price levels. We will study weights $\theta \in \lbrace0.2, 0.5, 0.8\rbrace$ (corresponding to 20/80, 50/50, and 80/20 pools). The 50/50 pool matches V2; asymmetric pools reduce LVR by concentrating exposure.
 
 ---
 
@@ -290,12 +290,12 @@ amm_comparison/
 |------------|------|-----------------|-----------------|--------|
 | **E1: Slippage Curves** | V2, V3 (4 ranges), Curve (5 A values), Balancer (3 weights) | Trade size / TVL ∈ [0.01%, 20%] | TVL = $1M, $P_0 = 1$ | Slippage vs. trade size (log scale) |
 | **E2: IL vs. Price Ratio** | V2, V3 (4 ranges), Curve (5 A values), Balancer (3 weights) | Price ratio $r = P_T/P_0 \in [0.1, 10]$ | Static (no path) | IL% vs. price ratio |
-| **E3: LVR vs. Volatility** | V2, V3 (medium range), Curve ($A=100$), Balancer (50/50) | $\sigma \in \{ 1\%, 3\%, 5\%, 10\%, 20\% \}$ | TVL = $1M, $T$ = 30d, 1,000 paths | Mean $\pm$ std LVR per day |
+| **E3: LVR vs. Volatility** | V2, V3 (medium range), Curve ($A=100$), Balancer (50/50) | $\sigma \in \lbrace 1\%, 3\%, 5\%, 10\%, 20\% \rbrace$ | TVL = $1M, $T$ = 30d, 1,000 paths | Mean $\pm$ std LVR per day |
 | **E4: LVR per TVL** | All AMMs | $\sigma$ and range/weight/A | TVL = $1M | $\ell/V$ as function of $\sigma^2$ |
 | **E5: Hedged LP P&L** | V2, V3 (medium range), Curve ($A=100$) | Trade volume (low/med/high) | $\sigma = 5\%$, 1,000 paths | Mean hedged P&L, Sharpe by rebalancing freq. |
 | **E6: V3 Range Study** | V3 | Range width $r$ | $\sigma = 5\%$, TVL = $1M | LVR/TVL, capital efficiency, range utilization |
-| **E7: Curve A Study** | Curve | $A \in \{1, 10, 100, 1000, 10000\}$ | $\sigma = 2\%$ (stablecoin), TVL = $1M | Slippage, LVR/TVL, IL |
-| **E8: Break-even Volume** | All AMMs | Trade volume | $\sigma \in \{ 1\%, 5\%, 10\% \}$ | Fee revenue vs. LVR; break-even curve |
+| **E7: Curve A Study** | Curve | $A \in \lbrace1, 10, 100, 1000, 10000\rbrace$ | $\sigma = 2\%$ (stablecoin), TVL = $1M | Slippage, LVR/TVL, IL |
+| **E8: Break-even Volume** | All AMMs | Trade volume | $\sigma \in \lbrace 1\%, 5\%, 10\% \rbrace$ | Fee revenue vs. LVR; break-even curve |
 
 ---
 
