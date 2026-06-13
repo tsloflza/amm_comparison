@@ -224,7 +224,7 @@ which equals the difference between the rebalancing strategy's P&L and the pool'
 
 Following Milionis et al. equation (13):
 
-$$\underbrace{\int_0^T x^{\ast}(P_t)\, dP_t}_{\text{Market Risk}} + \underbrace{\text{FEE}_T - \text{LVR}_T}_{\text{Net Alpha (Hedged P\&L)}}$$
+$$\underbrace{\int_0^T x^{\ast}(P_t)\, dP_t}_{\text{Market Risk}} + \underbrace{\text{FEE}_T - \text{LVR}_T}_{\text{Net Alpha (Hedged PnL)}}$$
 
 We report:
 - **Raw (unhedged) LP P&L**: total pool value change + fees collected
