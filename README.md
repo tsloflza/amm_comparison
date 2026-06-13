@@ -60,9 +60,9 @@ Slippage for a trade $\Delta x$: $\Delta y = L\sqrt{P} - \frac{L^2}{L/\sqrt{P} +
 
 For a single range order $[P_a, P_b)$ with liquidity $L$ (from Milionis et al. Example 4):
 
-$$x^{*}(P) = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_b}}\right), \quad y^{*}(P) = L\left(\sqrt{P} - \sqrt{P_a}\right)$$
+$$x^{*}(P) = L\bigl(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_b}}\bigr), \quad y^{*}(P) = L\bigl(\sqrt{P} - \sqrt{P_a}\bigr)$$
 
-$$V(P) = L\left(2\sqrt{P} - \frac{P}{\sqrt{P_b}} - \sqrt{P_a}\right), \quad \ell(\sigma, P) = \frac{L\sigma^2}{4\sqrt{P}}$$
+$$V(P) = L\bigl(2\sqrt{P} - \frac{P}{\sqrt{P_b}} - \sqrt{P_a}\bigr), \quad \ell(\sigma, P) = \frac{L\sigma^2}{4\sqrt{P}}$$
 
 Key insight: instantaneous LVR equals V2's, but $V(P)$ is smaller — so **LVR per dollar of TVL diverges** as the range narrows. For aggregate V3 pools (Example 5), only in-range orders contribute:
 
@@ -100,7 +100,7 @@ $$dP_t = \sigma P_t \, dB_t$$
 
 with a zero risk-free rate (risk-neutral measure $Q$). We simulate using the Euler-Maruyama discretization:
 
-$$P_{t+\Delta t} = P_t \cdot \exp\left(\left(-\frac{\sigma^2}{2}\right)\Delta t + \sigma\sqrt{\Delta t}\, Z_t\right), \quad Z_t \sim \mathcal{N}(0,1)$$
+$$P_{t+\Delta t} = P_t \cdot \exp\bigl(\bigl(-\frac{\sigma^2}{2}\bigr)\Delta t + \sigma\sqrt{\Delta t}\, Z_t\bigr), \quad Z_t \sim \mathcal{N}(0,1)$$
 
 **Simulation parameters:**
 
