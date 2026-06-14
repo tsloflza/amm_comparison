@@ -121,15 +121,17 @@ class BalancerWeightedAMM(BaseAMM):
     def get_amount_out(self, delta_x: float) -> float:
         """
         Sell `delta_x` of risky asset using Balancer's weighted swap formula.
-        y_out = y0 · [1 - (x0 / (x0 + dx*(1-fee)))^(θ/(1-θ))]
+        y_out = y0 · [1 - (x0 / (x0 + dx))^(θ/(1-θ))]
+
+        Returns the *pure curve* output (no fee deduction) — see note in
+        v2_amm.get_amount_out for why fees must not be folded in here.
         """
         x0 = self.x0_init
         y0 = self.y0_init
         th = self.theta
 
-        dx_after_fee = delta_x * (1.0 - self.fee_tier)
         exponent = th / (1.0 - th)
-        y_out = y0 * (1.0 - (x0 / (x0 + dx_after_fee)) ** exponent)
+        y_out = y0 * (1.0 - (x0 / (x0 + delta_x)) ** exponent)
         return max(y_out, 0.0)
 
     # ------------------------------------------------------------------

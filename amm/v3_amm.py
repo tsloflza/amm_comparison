@@ -141,6 +141,9 @@ class UniswapV3AMM(BaseAMM):
             x_virt = x*(P0) + L/√Pb
             y_virt = y*(P0) + L·√Pa
         Then CPMM:  x_virt·y_virt = const
+
+        Returns the *pure curve* output (no fee deduction) — see note in
+        v2_amm.get_amount_out for why fees must not be folded in here.
         """
         sa = sqrt(self.Pa)
         sb = sqrt(self.Pb)
@@ -153,8 +156,7 @@ class UniswapV3AMM(BaseAMM):
         y_virt = y_real + self.L * sa
         k = x_virt * y_virt
 
-        dx_after_fee = delta_x * (1.0 - self.fee_tier)
-        y_virt_new   = k / (x_virt + dx_after_fee)
+        y_virt_new   = k / (x_virt + delta_x)
         dy           = y_virt - y_virt_new          # numeraire received (positive)
         return dy
 

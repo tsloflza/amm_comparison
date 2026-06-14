@@ -105,15 +105,19 @@ class BaseAMM(ABC):
         """
         Amount of numeraire y received when selling `delta_x` of the risky asset
         (positive delta_x = sell risky asset into pool).
-        Fees are applied internally using self.fee_tier.
-        Returns the *gross* amount of y received (before any external fees).
+        Returns the *pure curve* (pre-fee) amount of y received — slippage /
+        price-impact is purely a property of the bonding curve's shape and
+        must be measured against the full `delta_x` input. Trading fees are
+        accounted for separately as an additive cost (see
+        simulation/noise_trader.py), not folded into this curve evaluation.
         """
 
     def slippage_pct(self, delta_x: float) -> float:
         """
-        Price impact as % deviation from spot price P0:
+        Price impact as % deviation from spot price P0 (fees excluded):
             slippage = (P_eff - P0) / P0 * 100
-        where P_eff = delta_y / delta_x (average execution price).
+        where P_eff = delta_y / delta_x (average execution price) and
+        delta_y = get_amount_out(delta_x) is the *pre-fee* curve output.
         Positive delta_x = LP sells risky asset (price should drop → negative slippage).
         We return the absolute % impact for display convenience.
         """

@@ -77,7 +77,15 @@ class UniswapV2AMM(BaseAMM):
     def get_amount_out(self, delta_x: float) -> float:
         """
         Sell `delta_x` of the risky asset for numeraire.
-        Applies fee to the input before executing the CPMM swap.
+
+        Returns the *pure curve* output (no fee deduction). Slippage /
+        price-impact is a property of the bonding curve's geometry and is
+        measured against the full `delta_x` input; the trading fee is a
+        separate, additive cost that is accounted for independently
+        (see simulation/noise_trader.py and metrics/lvr.py break-even
+        analysis). Mixing the fee into get_amount_out while dividing by
+        the pre-fee `delta_x` in slippage_pct() would bias every slippage
+        value upward by ~fee_tier, even as delta_x -> 0.
         delta_x > 0 → selling X (LP receives Y).
         Returns Y received.
         """
@@ -85,8 +93,7 @@ class UniswapV2AMM(BaseAMM):
         y0 = self.y_star(self.P0)
         k  = x0 * y0
 
-        dx_after_fee = delta_x * (1.0 - self.fee_tier)
-        y_out = y0 - k / (x0 + dx_after_fee)
+        y_out = y0 - k / (x0 + delta_x)
         return y_out
 
     # ------------------------------------------------------------------

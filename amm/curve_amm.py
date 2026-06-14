@@ -281,13 +281,14 @@ class CurveStableSwapAMM(BaseAMM):
     def get_amount_out(self, delta_x: float) -> float:
         """
         Swap delta_x of risky asset (X) for numeraire (Y).
-        Applies fee_tier to the input.
+
+        Returns the *pure curve* output (no fee deduction) — see note in
+        v2_amm.get_amount_out for why fees must not be folded in here.
         """
         x0 = self.x0
         y0 = self.y0
 
-        dx_after_fee = delta_x * (1.0 - self.fee_tier)
-        x_new = x0 + dx_after_fee
+        x_new = x0 + delta_x
         y_new = _compute_y_from_x(x_new, self.D, self.A)
         dy    = y0 - y_new          # Y received by trader
         return max(dy, 0.0)
